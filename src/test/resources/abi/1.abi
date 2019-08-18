@@ -1,0 +1,7 @@
+1
+com.test.HelloAvm
+Clinit: ()
+public static void sayHello()
+public static String greet(String)
+public static void setString(String)
+public static String[][] setValues(short[], int[][], BigInteger, long[][], boolean)

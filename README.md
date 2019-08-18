@@ -1,0 +1,1 @@
+Aion4j code generation library for AVM based Java Smart Contract.
