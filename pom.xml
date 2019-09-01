@@ -5,7 +5,7 @@
     <groupId>org.aion4j</groupId>
     <artifactId>aion4j-code-generator</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-    <description>Code Generator library for AVM Smart Contract</description>
+    <description>Code Generation library for AVM Smart Contract</description>
     <url>https://github.com/bloxbean/aion4j-code-generator</url>
 
     <developers>
