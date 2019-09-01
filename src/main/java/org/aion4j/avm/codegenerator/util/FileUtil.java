@@ -24,10 +24,7 @@
 
 package org.aion4j.avm.codegenerator.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class FileUtil {
 
@@ -50,5 +47,22 @@ public class FileUtil {
             }
         }
         return resultStringBuilder.toString();
+    }
+
+    public static String readFile(String path) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+
+        try {
+            StringBuilder builder = new StringBuilder();
+            String currentLine = reader.readLine();
+            while (currentLine != null) {
+                builder.append(currentLine);
+                builder.append("\n");
+                currentLine = reader.readLine();
+            }
+            return builder.toString();
+        } finally {
+            reader.close();
+        }
     }
 }

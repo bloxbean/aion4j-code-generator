@@ -1,0 +1,134 @@
+package ${package};
+
+import avm.Address;
+import org.aion.avm.embed.AvmRule;
+import org.aion.avm.tooling.ABIUtil;
+import org.aion.types.TransactionStatus;
+
+import java.math.BigInteger;
+
+/**
+ * Test support helper class for contract ${className}
+ */
+public class ${className}TestImpl {
+
+    private AvmRule avmRule;
+
+    //default address with balance
+    private Address defaultAddress;
+    private Address dappAddr;
+
+    public ${className}TestImpl(AvmRule avmRule) {
+        this.avmRule = avmRule;
+        this.defaultAddress = avmRule.getPreminedAccount();
+    }
+
+    /**
+     * Call this method to deploy the contract in testclass
+     * #foreach($initParam in $abi.clint)
+     * @param  arg$velocityCount Deployment argument $velocityCount
+     * #end
+     */
+    public Address deploy(#foreach($initParam in $abi.clint)
+        #if($velocityCount != 1),
+        #end
+        $initParam arg$velocityCount
+    #end #if($abi.clint.size() > 0),
+        #end
+        Class<?>... otherClasses) {
+        return deploy(newRequestContext()
+            #foreach($initParam in $abi.clint),
+                    arg$velocityCount
+            #end, otherClasses);
+    }
+
+    /**
+     * Call this method to deploy the contract in testclass
+     * @param context context with deployer address and value
+     *  #foreach($initParam in $abi.clint)
+     * @param  arg$velocityCount Deployment argument $velocityCount
+     *  #end
+     */
+    public Address deploy(RequestContext context
+        #foreach($initParam in $abi.clint),
+            $initParam arg$velocityCount
+        #end, Class<?>... otherClasses
+    ) {
+
+        #if($abi.clint.size() > 0)
+            byte[] deployArgs = ABIUtil.encodeDeploymentArguments(
+                #foreach($initParam in $abi.clint)
+                    #if($velocityCount != 1),
+                    #end
+                        arg$velocityCount
+                #end
+            );
+
+            byte[] dapp = avmRule.getDappBytes(${abi.contractClass}.class, deployArgs, $abi.version, otherClasses);
+        #else
+            byte[] dapp = avmRule.getDappBytes(${abi.contractClass}.class, null, $abi.version, otherClasses);
+        #end
+
+        dappAddr = avmRule.deploy(context.sender(), context.value(), dapp, context.energyLimit(), context.energyPrice()).getDappAddress();
+
+        return dappAddr;
+    }
+
+    private RequestContext newRequestContext() {
+        return new RequestContext()
+                .sender(defaultAddress)
+                .value(BigInteger.ZERO);
+    }
+
+    #foreach($method in $abi.methods)
+        #if($method.returnType != 'void')
+            public ResponseContext<$method.returnTypeAsObject> ${method.methodName}(
+        #else
+        public ResponseContext ${method.methodName}(
+        #end
+        #foreach($param in $method.parameters)
+            #if($velocityCount != 1),
+            #end
+            $param arg$velocityCount
+        #end) {
+
+        return ${method.methodName}(newRequestContext()
+        #foreach($param in $method.parameters),
+            arg$velocityCount
+        #end);
+    }
+
+        #if($method.returnType != 'void')
+            public ResponseContext<$method.returnTypeAsObject> ${method.methodName}(
+            RequestContext context
+        #else
+        public ResponseContext ${method.methodName}(RequestContext context
+        #end
+        #foreach($param in $method.parameters)
+                ,$param arg$velocityCount
+        #end) {
+        byte[] txData = ABIUtil.encodeMethodArguments("$method.methodName");
+        AvmRule.ResultWrapper result = avmRule.call(context.sender(), dappAddr, context.value(), txData, context.energyLimit(), context.energyPrice());
+
+        #if($method.returnType != 'void')
+            ResponseContext<$method.returnTypeAsObject> responseContext = new ResponseContext<$method.returnTypeAsObject>();
+            responseContext.setResultWrapper(result);
+
+            TransactionStatus transactionStatus = result.getReceiptStatus();
+            if (transactionStatus.isSuccess()) {
+                byte[] data = result.getTransactionResult().copyOfTransactionOutput().get();
+
+                if (data != null) {
+                    $method.returnType resultData = ($method.returnType) result.getDecodedReturnData();
+                    responseContext.setData(resultData);
+                }
+            }
+        #else
+            ResponseContext responseContext = new ResponseContext();
+            responseContext.setResultWrapper(result);
+        #end
+
+        return responseContext;
+    }
+    #end
+}

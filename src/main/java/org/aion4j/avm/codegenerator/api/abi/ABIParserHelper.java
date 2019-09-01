@@ -46,8 +46,6 @@ public class ABIParserHelper {
         org.aion4j.codegenerator.abi.antlr4.ABIParser parser = new org.aion4j.codegenerator.abi.antlr4.ABIParser(tokens);
         ParseTree tree = parser.abi_content();
 
-        System.out.println("Tree >> " + tree);
-
         ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
 
         ABIParserListenerImpl abiListener = new ABIParserListenerImpl();

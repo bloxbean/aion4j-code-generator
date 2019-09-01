@@ -1,0 +1,48 @@
+package ${package};
+
+import avm.Address;
+
+import java.math.BigInteger;
+
+public class RequestContext {
+    private Address sender;
+    private BigInteger value;
+    private long energyLimit = 5000000L;
+    private long energyPrice = 1L;
+
+    public RequestContext sender(Address sender) {
+        this.sender = sender;
+        return this;
+    }
+
+    public RequestContext value(BigInteger value) {
+        this.value = value;
+        return this;
+    }
+
+    public RequestContext energyLimit(long energyLimit) {
+        this.energyLimit = energyLimit;
+        return this;
+    }
+
+    public RequestContext energyPrice(long energyPrice) {
+        this.energyPrice = energyPrice;
+        return this;
+    }
+
+    public Address sender() {
+        return this.sender;
+    }
+
+    public BigInteger value() {
+        return this.value;
+    }
+
+    public long energyLimit() {
+        return this.energyLimit;
+    }
+
+    public long energyPrice() {
+        return this.energyPrice;
+    }
+}

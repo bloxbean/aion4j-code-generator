@@ -68,4 +68,30 @@ public class ABIMethod {
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
+
+    public String getReturnTypeAsObject() {
+        if(returnType == null || returnType.endsWith("[]"))
+            return returnType;
+
+        switch (returnType) {
+            case "byte":
+                return "Byte";
+            case "boolean":
+                return "Boolean";
+            case "char":
+                return "Character";
+            case "short":
+                return "Short";
+            case "int":
+                return "Integer";
+            case "float":
+                return "Float";
+            case "long":
+                return "Long";
+            case "double":
+                return "Double";
+            default:
+                return returnType;
+        }
+    }
 }

@@ -1,0 +1,25 @@
+package ${package};
+
+import org.aion.avm.embed.AvmRule;
+
+public class ResponseContext<T> {
+
+    private AvmRule.ResultWrapper resultWrapper;
+    private T data;
+
+    public AvmRule.ResultWrapper getResultWrapper() {
+        return resultWrapper;
+    }
+
+    public void setResultWrapper(AvmRule.ResultWrapper resultWrapper) {
+        this.resultWrapper = resultWrapper;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+}
