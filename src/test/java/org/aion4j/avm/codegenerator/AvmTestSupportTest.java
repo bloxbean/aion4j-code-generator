@@ -48,6 +48,8 @@ public class AvmTestSupportTest {
 
         Assert.assertTrue(formattedSource.contains("package com.test"));
         Assert.assertTrue(formattedSource.contains("class HelloAvmTestImpl"));
+        Assert.assertTrue(formattedSource.contains("return setValues(newRequestContext(), arg1, arg2, arg3, arg4, arg5);"));
+        Assert.assertTrue(formattedSource.contains("byte[] txData = ABIUtil.encodeMethodArguments(\"setValues\", arg1, arg2, arg3, arg4, arg5);"));
     }
 
     @Test

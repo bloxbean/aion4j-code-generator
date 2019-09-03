@@ -84,7 +84,7 @@ public class ${className}TestImpl {
         #if($method.returnType != 'void')
             public ResponseContext<$method.returnTypeAsObject> ${method.methodName}(
         #else
-        public ResponseContext ${method.methodName}(
+            public ResponseContext ${method.methodName}(
         #end
         #foreach($param in $method.parameters)
             #if($velocityCount != 1),
@@ -107,7 +107,11 @@ public class ${className}TestImpl {
         #foreach($param in $method.parameters)
                 ,$param arg$velocityCount
         #end) {
-        byte[] txData = ABIUtil.encodeMethodArguments("$method.methodName");
+        byte[] txData = ABIUtil.encodeMethodArguments("$method.methodName"
+            #foreach($param in $method.parameters)
+                    ,arg$velocityCount
+            #end
+        );
         AvmRule.ResultWrapper result = avmRule.call(context.sender(), dappAddr, context.value(), txData, context.energyLimit(), context.energyPrice());
 
         #if($method.returnType != 'void')
