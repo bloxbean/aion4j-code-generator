@@ -24,15 +24,12 @@
 
 package org.aion4j.avm.codegenerator.api.abi;
 
-import org.aion4j.avm.codegenerator.api.abi.exception.ABIParseException;
 import org.aion4j.codegenerator.abi.antlr4.*;
 import org.aion4j.codegenerator.abi.antlr4.ABIParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.velocity.runtime.parser.ParserTreeConstants;
 
 import java.util.List;
 

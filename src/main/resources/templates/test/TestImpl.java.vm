@@ -26,19 +26,19 @@ public class ${className}TestImpl {
     /**
      * Call this method to deploy the contract in testclass
      * #foreach($initParam in $abi.clint)
-     * @param  arg$velocityCount Deployment argument $velocityCount
+     * @param  arg$foreach.count  Deployment argument $foreach.count
      * #end
      */
     public Address deploy(#foreach($initParam in $abi.clint)
-        #if($velocityCount != 1),
+        #if(!$foreach.first),
         #end
-        $initParam arg$velocityCount
+        $initParam arg$foreach.count
     #end #if($abi.clint.size() > 0),
         #end
         Class<?>... otherClasses) {
         return deploy(newRequestContext()
             #foreach($initParam in $abi.clint),
-                    arg$velocityCount
+                    arg$foreach.count
             #end, otherClasses);
     }
 
@@ -46,21 +46,21 @@ public class ${className}TestImpl {
      * Call this method to deploy the contract in testclass
      * @param context context with deployer address and value
      *  #foreach($initParam in $abi.clint)
-     * @param  arg$velocityCount Deployment argument $velocityCount
+     * @param  arg$foreach.count  Deployment argument $foreach.count
      *  #end
      */
     public Address deploy(RequestContext context
         #foreach($initParam in $abi.clint),
-            $initParam arg$velocityCount
+            $initParam arg$foreach.count
         #end, Class<?>... otherClasses
     ) {
 
         #if($abi.clint.size() > 0)
             byte[] deployArgs = ABIUtil.encodeDeploymentArguments(
                 #foreach($initParam in $abi.clint)
-                    #if($velocityCount != 1),
+                    #if(!$foreach.first),
                     #end
-                        arg$velocityCount
+                        arg$foreach.count
                 #end
             );
 
@@ -87,14 +87,14 @@ public class ${className}TestImpl {
             public ResponseContext ${method.methodName}(
         #end
         #foreach($param in $method.parameters)
-            #if($velocityCount != 1),
+            #if(!$foreach.first),
             #end
-            $param arg$velocityCount
+            $param arg$foreach.count
         #end) {
 
         return ${method.methodName}(newRequestContext()
         #foreach($param in $method.parameters),
-            arg$velocityCount
+            arg$foreach.count
         #end);
     }
 
@@ -105,11 +105,11 @@ public class ${className}TestImpl {
         public ResponseContext ${method.methodName}(RequestContext context
         #end
         #foreach($param in $method.parameters)
-                ,$param arg$velocityCount
+                ,$param arg$foreach.count
         #end) {
         byte[] txData = ABIUtil.encodeMethodArguments("$method.methodName"
             #foreach($param in $method.parameters)
-                    ,arg$velocityCount
+                    ,arg$foreach.count
             #end
         );
         AvmRule.ResultWrapper result = avmRule.call(context.sender(), dappAddr, context.value(), txData, context.energyLimit(), context.energyPrice());
