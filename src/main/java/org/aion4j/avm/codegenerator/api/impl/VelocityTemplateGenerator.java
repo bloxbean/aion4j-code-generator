@@ -40,7 +40,7 @@ import java.util.Map;
 public class VelocityTemplateGenerator implements TemplateGenerator {
     VelocityEngine velocityEngine = null;
 
-    public VelocityTemplateGenerator() {
+    public  VelocityTemplateGenerator() {
         init();
     }
 

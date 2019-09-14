@@ -3,7 +3,7 @@ package org.aion4j.avm.codegenerator;
 import com.google.googlejavaformat.java.Formatter;
 import org.aion4j.avm.codegenerator.api.abi.ABI;
 import org.aion4j.avm.codegenerator.api.abi.ABIParserHelper;
-import org.aion4j.avm.codegenerator.api.testsupport.TestSupportGenerator;
+import org.aion4j.avm.codegenerator.generators.testsupport.TestSupportGenerator;
 import org.aion4j.avm.codegenerator.util.FileUtil;
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.aion4j.avm.codegenerator.api.testsupport;
+package org.aion4j.avm.codegenerator.api.generator;
 
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
@@ -15,21 +15,11 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.HashMap;
 
-public class TestSupportGenerator {
-    private final Logger logger = LoggerFactory.getLogger(TestSupportGenerator.class);
-
-    private final String TEST_IMPL_TEMPLATE = "templates/test/TestImpl.java.vm";
-    private final String REQUEST_CONTEXT_TEMPLATE = "templates/test/RequestContext.java.vm";
-    private final String RESPONSE_CONTEXT_TEMPLATE = "templates/test/ResponseContext.java.vm";
-
-    private TemplateGenerator templateGenerator;
-    private boolean verbose;
-    private boolean ignoreFormattingError = true;
-
-    public TestSupportGenerator(boolean verbose) {
-        this.templateGenerator = new VelocityTemplateGenerator();
-        this.verbose = verbose;
-    }
+public abstract class BaseGenerator implements Generator {
+    private final Logger logger = LoggerFactory.getLogger(BaseGenerator.class);
+    protected TemplateGenerator templateGenerator;
+    protected boolean verbose;
+    protected boolean ignoreFormattingError = true;
 
     public void generate(String abiString, String folder) throws IOException {
         ABI abi = parse(abiString);
@@ -58,20 +48,22 @@ public class TestSupportGenerator {
             throw new CodeGenerationException("Package folder could not be created. May be permission issue: " + packageDir.getAbsolutePath());
         }
 
-        //Generate main testImpl class
-        FileWriter contractTestImplWriter = new FileWriter(new File(packageDir, classInfo._2() + "TestImpl.java"));
-        generateFromTemplate(TEST_IMPL_TEMPLATE, data, contractTestImplWriter);
+        doGenerate(folder, packageDir.getAbsolutePath(), data);
+    }
 
-        //Generate RequestContext
-        FileWriter requestContextWriter = new FileWriter(new File(packageDir, "RequestContext.java"));
-        generateFromTemplate(REQUEST_CONTEXT_TEMPLATE, data, requestContextWriter);
+    public void setVerbose(boolean flag) {
+        verbose = flag;
+    }
 
-        //Generate ResponseContext
-        FileWriter responseContextWriter = new FileWriter(new File(packageDir, "ResponseContext.java"));
-        generateFromTemplate(RESPONSE_CONTEXT_TEMPLATE, data, responseContextWriter);
+    public void setIgnoreFormattingError(boolean flag) {
+        this.ignoreFormattingError = flag;
     }
 
     public void generateFromTemplate(String  template, HashMap<String, Object> data, Writer writer) throws IOException {
+
+        if(templateGenerator == null)
+            templateGenerator = new VelocityTemplateGenerator();
+
         StringWriter mywriter = new StringWriter();
         templateGenerator.generate(template, data, mywriter);
 
@@ -94,9 +86,6 @@ public class TestSupportGenerator {
         writer.close();
     }
 
-    public void setIgnoreFormattingError(boolean flag) {
-        this.ignoreFormattingError = flag;
-    }
 
     private ABI parse(String abi) {
         return ABIParserHelper.parse(abi);
@@ -119,4 +108,6 @@ public class TestSupportGenerator {
 
         return new Tuple<>(packageName, className);
     }
+
+    protected abstract void doGenerate(String baseDir, String packageDir, HashMap<String, Object> data );
 }
