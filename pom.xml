@@ -223,10 +223,10 @@
                     </plugin>
                 </plugins>
             </build>
-            <properties>
-                <gpg.executable>gpg2</gpg.executable>
-                <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
-            </properties>
+<!--            <properties>-->
+<!--                <gpg.executable>gpg2</gpg.executable>-->
+<!--                <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>-->
+<!--            </properties>-->
         </profile>
     </profiles>
 
