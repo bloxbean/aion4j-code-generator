@@ -1,7 +1,7 @@
 node {
    def mvnHome
    stage('Preparation') {
-      git 'https://github.com/bloxbean/aion4j-code-generator.git'
+//       git 'https://github.com/bloxbean/aion4j-code-generator.git'
       mvnHome = tool 'M3'
    }
    stages {
