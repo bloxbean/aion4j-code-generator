@@ -81,13 +81,12 @@ pipeline {
 
                     sh 'mvn -s "$MAVEN_SETTINGS" release:clean release:prepare release:perform -Darguments=-Dgpg.passphrase=${gpg_passphrase} -DskipITs -Prelease'
                 }
-
-                post {
-                    success {
-                        echo "Publish to Sonatype repository"
-                        dir("target/checkout") {
-                            sh 'mvn nexus-staging:release -Prelease'
-                        }
+            }
+            post {
+                success {
+                    echo "Publish to Sonatype repository"
+                    dir("target/checkout") {
+                        sh 'mvn nexus-staging:release -Prelease'
                     }
                 }
             }
