@@ -21,9 +21,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh """
-                    mvn clean package
-                """
+
+                 sh  'mvn clean package'
             }
         }
 
@@ -33,11 +32,11 @@ pipeline {
                 sh 'mvn -B test'
 
             }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
+//            post {
+//                always {
+//                    junit '**/target/surefire-reports/*.xml'
+//                }
+//            }
         }
 
         stage('Integration Tests') {
@@ -46,11 +45,11 @@ pipeline {
                 sh 'mvn -B integration-test'
 
             }
-            post {
-                always {
-                    junit '**/target/failsafe-reports/*.xml'
-                }
-            }
+//            post {
+//                always {
+//                    junit '**/target/failsafe-reports/*.xml'
+//                }
+//            }
         }
 
         stage("Snapshot Release") {
@@ -78,6 +77,13 @@ pipeline {
                     sh 'mvn -s "$MAVEN_SETTINGS" clean deploy -Dgpg.passphrase=${gpg_passphrase} -DskipITs -Prelease'
 
                 }
+            }
+        }
+
+        stage('Results') {
+            steps {
+                junit '**/target/surefire-reports/TEST-*.xml'
+                archiveArtifacts 'target/*.jar'
             }
         }
     }
