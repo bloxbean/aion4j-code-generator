@@ -74,8 +74,16 @@ pipeline {
                 configFileProvider(
                         [configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]) {
 
-                    sh 'mvn -s "$MAVEN_SETTINGS" clean deploy -Dgpg.passphrase=${gpg_passphrase} -DskipITs -Prelease'
+                    sh 'mvn -s "$MAVEN_SETTINGS" release:clean release:prepare release:perform -Dgpg.passphrase=${gpg_passphrase} -DskipITs -Prelease'
+                }
 
+                post {
+                    success {
+                        echo "Publish to Sonatype repository"
+                        dir("target/checkout") {
+                            sh 'mvn nexus-staging:release -Prelease'
+                        }
+                    }
                 }
             }
         }
