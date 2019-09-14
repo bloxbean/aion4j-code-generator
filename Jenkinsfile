@@ -74,6 +74,11 @@ pipeline {
                 configFileProvider(
                         [configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]) {
 
+                    sh """
+                        git config --global user.email satran004@gmail.com
+                        git config --global user.name Jenkins
+                       """
+
                     sh 'mvn -s "$MAVEN_SETTINGS" release:clean release:prepare release:perform -Darguments=-Dgpg.passphrase=${gpg_passphrase} -DskipITs -Prelease'
                 }
 
