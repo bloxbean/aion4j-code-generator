@@ -32,11 +32,11 @@ pipeline {
                 sh 'mvn -B test'
 
             }
-//            post {
-//                always {
-//                    junit '**/target/surefire-reports/*.xml'
-//                }
-//            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
         }
 
         stage('Integration Tests') {
@@ -82,8 +82,6 @@ pipeline {
 
         stage('Results') {
             steps {
-                junit '**/target/surefire-reports/TEST-*.xml'
-                junit '**/target/failsafe-reports/*.xml'
                 archiveArtifacts 'target/*.jar'
             }
         }
