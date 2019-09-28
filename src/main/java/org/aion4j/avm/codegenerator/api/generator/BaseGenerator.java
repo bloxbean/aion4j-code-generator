@@ -1,7 +1,5 @@
 package org.aion4j.avm.codegenerator.api.generator;
 
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 import org.aion4j.avm.codegenerator.api.TemplateGenerator;
 import org.aion4j.avm.codegenerator.api.abi.ABI;
 import org.aion4j.avm.codegenerator.api.abi.ABIParserHelper;
@@ -12,8 +10,13 @@ import org.aion4j.avm.codegenerator.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class BaseGenerator implements Generator {
     private final Logger logger = LoggerFactory.getLogger(BaseGenerator.class);
@@ -22,6 +25,10 @@ public abstract class BaseGenerator implements Generator {
     protected boolean ignoreFormattingError = true;
 
     public void generate(String abiString, String folder) throws IOException {
+        generate(abiString, folder, Collections.emptyMap());
+    }
+
+    public void generate(String abiString, String folder, Map<String, Object> templateData) throws IOException {
         ABI abi = parse(abiString);
 
         if(abi == null)
@@ -34,6 +41,10 @@ public abstract class BaseGenerator implements Generator {
         data.put("className", classInfo._2());
         data.put("methods", abi.getMethods());
         data.put("abi", abi);
+        data.put("abi_str", abiString.trim());
+
+        populateData(data);
+        data.putAll(templateData);
 
         File baseFolder = new File(folder);
         if(!baseFolder.exists()) {
@@ -70,22 +81,20 @@ public abstract class BaseGenerator implements Generator {
         if(verbose || logger.isDebugEnabled())
             logger.info(mywriter.toString());
 
-        String formattedSource = null;
-        try {
-            formattedSource = new Formatter().formatSource(mywriter.toString());
-        } catch (FormatterException e) {
-            if(verbose)
-                logger.info("Error formatting generated source : \n" + mywriter.toString(), e);
-            formattedSource = mywriter.toString();
-            if(!ignoreFormattingError)
-                throw new CodeGenerationException("Some error in generated code", e);
-        }
+        String formattedSource = formatSource(mywriter.toString());
 
         writer.append(formattedSource);
         writer.flush();
         writer.close();
     }
 
+    protected String formatSource(String source) {
+        return source;
+    }
+
+    protected void populateData(Map<String, Object> data) {
+
+    }
 
     private ABI parse(String abi) {
         return ABIParserHelper.parse(abi);

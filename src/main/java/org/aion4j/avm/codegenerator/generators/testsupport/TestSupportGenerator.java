@@ -1,5 +1,7 @@
 package org.aion4j.avm.codegenerator.generators.testsupport;
 
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import org.aion4j.avm.codegenerator.api.exception.CodeGenerationException;
 import org.aion4j.avm.codegenerator.api.impl.VelocityTemplateGenerator;
 import org.aion4j.avm.codegenerator.api.generator.BaseGenerator;
@@ -39,5 +41,21 @@ public class TestSupportGenerator extends BaseGenerator {
         } catch (Exception e) {
             throw new CodeGenerationException("Error in generting test support code", e);
         }
+    }
+
+    @Override
+    protected String formatSource(String source) {
+        String formattedSource = null;
+        try {
+            formattedSource = new Formatter().formatSource(source);
+        } catch (FormatterException e) {
+            if(verbose)
+                logger.info("Error formatting generated source : \n" + source, e);
+            formattedSource = source;
+            if(!ignoreFormattingError)
+                throw new CodeGenerationException("Some error in generated code", e);
+        }
+
+        return formattedSource;
     }
 }

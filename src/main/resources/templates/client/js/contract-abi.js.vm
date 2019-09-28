@@ -1,0 +1,42 @@
+const Web3 = require("aion-web3");
+
+// Set up node
+const web3 = new Web3(new Web3.providers.HttpProvider("'http://<host>:8545'"));
+const pk = "<private_key>"
+
+//Create contract interface
+let abi = `$abi_str
+`;
+
+let contractAddress = "<contract_address>";
+
+let abiObj = web3.avm.contract.Interface(abi);
+
+web3.avm.contract.initBinding(contractAddress, abiObj, pk,web3);
+
+#foreach($method in $abi.methods)
+async function ${method.methodName}(##
+value##
+    #foreach($param in $method.parameters)
+,arg$foreach.count##
+    #end) {
+    #if($foreach.first)
+    /*
+    Set gas, price, value, nonce if needed.
+    web3.avm.contract.setGas(value) - accepts an integer and set the value of nonce to be used for transactions. The default is 5000000.
+    web3.avm.contract.setGasPrice(value) - accepts an integer and set the value of nonce to be used for transactions. The default is 2000000.
+    web3.avm.contract.setValue(value) -  accepts an integer and set the value of nonce to be used for transactions. The default is 0.
+    web3.avm.contract.setNonce(value) - accepts an integer and set the value of nonce to be used for transactions. The default is null and a value is calculated for each transaction.
+    web3.avm.contract.setTransactionObject(obj) - accepts an integer and accept an object in the format of a transaction object.
+    */
+
+    #end
+    let res = await web3.avm.contract.transaction.${method.methodName}(##
+        #foreach($param in $method.parameters)
+            #if(!$foreach.first), #end##
+arg$foreach.count##
+        #end);
+    console.log(res); //receipt
+}
+
+#end

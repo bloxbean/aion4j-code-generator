@@ -1,0 +1,58 @@
+const Web3 = require("aion-web3");
+let path = require('path');
+
+const web3 = new Web3(new Web3.providers.HttpProvider('http://<host>:8545'));
+
+const privateKey = "<private_key>";
+const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+console.log(account.address);
+
+async function deploy(value##
+    #foreach($initParam in $abi.clint)
+, arg$foreach.count##
+    #end) {
+
+    //contract
+    let jarPath = path.join(__dirname,'$jar');
+
+    let data = web3.avm.contract.deploy(jarPath).args([##
+            #foreach($initParam in $abi.clint)
+                #if(!$foreach.first), #end##
+"$initParam"##
+            #end],##
+[##
+    #foreach($initParam in $abi.clint)
+    #if(!$foreach.first), #end##
+arg$foreach.count##
+    #end]).init();
+
+    console.log(data);
+    //construct a transaction
+    const Tx = {
+        from: account.address,
+        data: data,
+        gasPrice: 10000000000,
+        gas: 5000000,
+        type: '0x2', //AVM java contract deployment
+        value: new BN(value)
+    };
+
+
+    const signedTx = await web3.eth.accounts.signTransaction(
+        Tx, account.privateKey
+    ).then((res) => signedCall = res);
+
+    console.log(signedTx);
+    const receipt = await web3.eth.sendSignedTransaction(
+        signedTx.rawTransaction
+    ).on('receipt', receipt => {
+        console.log("Receipt received!\ntxHash =", receipt.transactionHash)
+    });
+
+    console.log(receipt);
+    console.log("Contract Address: " + receipt.contractAddress);
+
+    return receipt;
+}
+
+deploy();

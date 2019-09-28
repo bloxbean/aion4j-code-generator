@@ -1,0 +1,18 @@
+1
+com.test.HelloAvm
+Clinit: (String, int)
+public static void sayHello()
+public static String greet(String)
+public static void setString(String)
+public static String[][] setValues(short[], int[][], BigInteger, long[][], boolean)
+public static byte getByte()
+public static boolean getBoolean()
+public static char getChar()
+public static short getShort()
+public static int getInt()
+public static float getFloat()
+public static long getLong()
+public static double getDouble()
+public static Address getAddress()
+public static BigInteger getBigInteger()
+public static int[] getIntArray()

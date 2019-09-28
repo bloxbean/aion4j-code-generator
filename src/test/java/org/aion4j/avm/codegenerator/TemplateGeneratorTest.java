@@ -55,7 +55,7 @@ public class TemplateGeneratorTest {
         data.put("name", "Avm");
 
         StringWriter writer = new StringWriter();
-        generator.generate("templates/client/js/contract-client.js.vm", data, writer);
+        generator.generate("templates/client/js/contract.js.vm", data, writer);
 
         System.out.println(writer.toString());
 

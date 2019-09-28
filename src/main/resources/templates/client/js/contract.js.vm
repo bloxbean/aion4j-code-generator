@@ -1,0 +1,98 @@
+const Web3 = require("aion-web3");
+const web3 = new Web3(new Web3.providers.HttpProvider("'http://<host>:8545'"));
+
+const privateKey = "<private_key>";
+const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+console.log(account.address);
+
+const contractAddress = "<contract_address>";
+
+/**************************************  Contract transactions **************************************/
+#foreach($method in $abi.methods)
+    async function ${method.methodName}(##
+value##
+        #foreach($param in $method.parameters)
+,arg$foreach.count##
+        #end) {
+        //calling method getCount(), which takes no argument, and returns a string
+        let data = web3.avm.contract.method('${method.methodName}').input([##
+            #foreach($param in $method.parameters)
+                #if(!$foreach.first), #end##
+"$param"##
+            #end], [##
+            #foreach($param in $method.parameters)
+                #if(!$foreach.first), #end##
+arg$foreach.count##
+            #end]).encode();
+
+        console.log(data);
+
+        const Tx = {
+            from: account.address,
+            to: contractAddress,
+            data: data,
+            gasPrice: 10000000000,
+            gas: 2000000,
+            value:new BN(value),
+            type: '0x1'
+        };
+
+        //client signing
+        const signed = await web3.eth.accounts.signTransaction(
+            Tx, account.privateKey
+        ).then((res) => signedCall = res);
+
+        console.log(signed);
+        const re = await web3.eth.sendSignedTransaction( signed.rawTransaction
+        ).on('receipt', receipt => {
+            console.log("Receipt received!\ntxHash =", receipt.transactionHash)
+        });
+
+        //console.log(re); //reciept
+        //console.log(re.logs[0].topics); //log topic
+        return re;
+    }
+
+#end
+/**************************************  Contract transactions ends **************************************/
+
+/**************************************  Contract call transactions **************************************/
+#foreach($method in $abi.methods)
+    #if($method.returnType != 'void')
+    async function ${method.methodName}_call(##
+        #foreach($param in $method.parameters)
+            #if(!$foreach.first), #end##
+arg$foreach.count##
+        #end) {
+        //calling method getCount(), which takes no argument, and returns a string
+        let data = web3.avm.contract.method('${method.methodName}').input([##
+            #foreach($param in $method.parameters)
+                #if(!$foreach.first), #end##
+"$param"##
+            #end], [##
+            #foreach($param in $method.parameters)
+                #if(!$foreach.first), #end##
+arg$foreach.count##
+            #end]).encode();
+
+        console.log(data);
+
+        const Tx = {
+            from: account.address,
+            to: contractAddress,
+            data: data,
+            gasPrice: 10000000000,
+            gas: 2000000
+            //type will be set to default
+        };
+
+        let res = await
+        web3.eth.call(Tx);
+        let avmRes = await web3.avm.contract.decode('$method.returnType', res);
+        console.log(avmRes);
+        return avmRes;
+    }
+
+    #end
+#end
+/**************************************  Contract call transactions Ends **************************************/
