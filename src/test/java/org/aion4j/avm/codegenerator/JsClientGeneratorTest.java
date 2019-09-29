@@ -42,7 +42,7 @@ public class JsClientGeneratorTest {
 
         String callContent = FileUtil.readFile(tempDir + File.separator + "contract.js");
         Assert.assertTrue(callContent.contains("async function setValues_call(arg1, arg2, arg3, arg4, arg5)"));
-        Assert.assertTrue(callContent.contains("let data = web3.avm.contract.method('setValues').input([\"short[]\", \"int[][]\", \"BigInteger\", \"long[][]\", \"boolean\"], [arg1, arg2, arg3, arg4, arg5])"));
+        Assert.assertTrue(callContent.contains("let data = web3.avm.contract.method('setValues').inputs([\"short[]\", \"int[][]\", \"BigInteger\", \"long[][]\", \"boolean\"], [arg1, arg2, arg3, arg4, arg5])"));
     }
 
     @Test

@@ -17,6 +17,7 @@ public class JsClientGenerator extends BaseGenerator {
     private final String CONTRACT_DEPLOY_WITH_ABI_JS_TEMPLATE = "templates/client/js/contract-deploy-abi.js.vm";
     private final String CONTRACT_CALL_JS_TEMPLATE = "templates/client/js/contract.js.vm";
     private final String CONTRACT_CALL_WITH_ABI_JS_TEMPLATE = "templates/client/js/contract-abi.js.vm";
+    private final String PACKAGE_JSON_TEMPLATE = "templates/client/js/package.json.vm";
 
     public JsClientGenerator(boolean verbose) {
         this.templateGenerator = new VelocityTemplateGenerator();
@@ -39,10 +40,19 @@ public class JsClientGenerator extends BaseGenerator {
             //Generate call abi js
             FileWriter contractCallAbiWriter = new FileWriter(new File(baseDir, "contract-abi.js"));
             generateFromTemplate(CONTRACT_CALL_WITH_ABI_JS_TEMPLATE, data, contractCallAbiWriter);
+
+            //Generate package json
+            File packageJson = new File(baseDir, "package.json");
+            if(!packageJson.exists()) {
+                generateFromTemplate(PACKAGE_JSON_TEMPLATE, data, new FileWriter(packageJson));
+            }
         } catch (Exception e) {
             throw new CodeGenerationException("Error in generting test support code", e);
         }
     }
 
-
+    @Override
+    protected boolean isPackageFolderCreationRequired() {
+        return false;
+    }
 }

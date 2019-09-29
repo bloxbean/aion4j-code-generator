@@ -1,18 +1,18 @@
 const Web3 = require("aion-web3");
+const BN = require("bn.js");
 
-// Set up node
-const web3 = new Web3(new Web3.providers.HttpProvider("'http://<host>:8545'"));
-const pk = "<private_key>"
+//Replace correct values for $web3_endpoint, $private_key, $contract_address
+const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
+const privateKey = "$private_key";
+const contractAddress = "$contract_address";
 
 //Create contract interface
 let abi = `$abi_str
 `;
 
-let contractAddress = "<contract_address>";
-
 let abiObj = web3.avm.contract.Interface(abi);
 
-web3.avm.contract.initBinding(contractAddress, abiObj, pk,web3);
+web3.avm.contract.initBinding(contractAddress, abiObj, privateKey,web3);
 
 #foreach($method in $abi.methods)
 async function ${method.methodName}(##
@@ -31,6 +31,7 @@ value##
     */
 
     #end
+    console.log("Sending transaction ...");
     let res = await web3.avm.contract.transaction.${method.methodName}(##
         #foreach($param in $method.parameters)
             #if(!$foreach.first), #end##
@@ -40,3 +41,5 @@ arg$foreach.count##
 }
 
 #end
+
+//Place your method call here

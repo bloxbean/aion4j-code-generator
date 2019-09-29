@@ -53,10 +53,13 @@ public abstract class BaseGenerator implements Generator {
 
         String packagePath = classInfo._1().replace('.', File.separatorChar);
         File packageDir = new File(baseFolder, packagePath);
-        if(packageDir.mkdirs() || packageDir.exists()) {
 
-        } else {
-            throw new CodeGenerationException("Package folder could not be created. May be permission issue: " + packageDir.getAbsolutePath());
+        if(isPackageFolderCreationRequired()) {
+            if (packageDir.mkdirs() || packageDir.exists()) {
+
+            } else {
+                throw new CodeGenerationException("Package folder could not be created. May be permission issue: " + packageDir.getAbsolutePath());
+            }
         }
 
         doGenerate(folder, packageDir.getAbsolutePath(), data);
@@ -94,6 +97,10 @@ public abstract class BaseGenerator implements Generator {
 
     protected void populateData(Map<String, Object> data) {
 
+    }
+
+    protected boolean isPackageFolderCreationRequired() {
+        return true;
     }
 
     private ABI parse(String abi) {

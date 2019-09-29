@@ -1,22 +1,23 @@
 const Web3 = require("aion-web3");
+const BN = require("bn.js");
 let path = require('path');
 
-// Set up web3
-const web3 = new Web3(new Web3.providers.HttpProvider('http://<host>:8545'));
-const pk = "<private_key>"
+//Replace correct values for $web3_endpoint, $private_key
+const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
+const privateKey = "$private_key";
 
 //Create contract interface
 let abi = `$abi_str
 `;
 
 let abiObj = web3.avm.contract.Interface(abi);
-web3.avm.contract.initBinding(null, abiObj, pk,web3);
+web3.avm.contract.initBinding(null, abiObj, privateKey,web3);
 
 async function deploy(##
     #foreach($initParam in $abi.clint)
         #if(!$foreach.first), #end##
 arg$foreach.count##
-    #end)
+    #end) {
 
     //contract
     let jarPath = path.join(__dirname,'$jar');
@@ -33,6 +34,6 @@ arg$foreach.count##
     return res;
 }
 
-deploy();
+deploy("0");
 
 

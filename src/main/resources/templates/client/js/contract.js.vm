@@ -1,11 +1,13 @@
 const Web3 = require("aion-web3");
-const web3 = new Web3(new Web3.providers.HttpProvider("'http://<host>:8545'"));
+const BN = require("bn.js");
 
-const privateKey = "<private_key>";
+//Replace correct values for $web3_endpoint, $private_key, $contract_address
+const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
+const privateKey = "$private_key";
+const contractAddress = "$contract_address";
+
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-console.log(account.address);
-
-const contractAddress = "<contract_address>";
+console.log("Account : " + account.address);
 
 /**************************************  Contract transactions **************************************/
 #foreach($method in $abi.methods)
@@ -15,7 +17,7 @@ value##
 ,arg$foreach.count##
         #end) {
         //calling method getCount(), which takes no argument, and returns a string
-        let data = web3.avm.contract.method('${method.methodName}').input([##
+        let data = web3.avm.contract.method('${method.methodName}').inputs([##
             #foreach($param in $method.parameters)
                 #if(!$foreach.first), #end##
 "$param"##
@@ -24,8 +26,6 @@ value##
                 #if(!$foreach.first), #end##
 arg$foreach.count##
             #end]).encode();
-
-        console.log(data);
 
         const Tx = {
             from: account.address,
@@ -46,7 +46,9 @@ arg$foreach.count##
         const re = await web3.eth.sendSignedTransaction( signed.rawTransaction
         ).on('receipt', receipt => {
             console.log("Receipt received!\ntxHash =", receipt.transactionHash)
-        });
+        }).catch(err => {
+            console.log("Transaction error: " + err);
+        });;
 
         //console.log(re); //reciept
         //console.log(re.logs[0].topics); //log topic
@@ -65,7 +67,7 @@ arg$foreach.count##
 arg$foreach.count##
         #end) {
         //calling method getCount(), which takes no argument, and returns a string
-        let data = web3.avm.contract.method('${method.methodName}').input([##
+        let data = web3.avm.contract.method('${method.methodName}').inputs([##
             #foreach($param in $method.parameters)
                 #if(!$foreach.first), #end##
 "$param"##
@@ -74,8 +76,6 @@ arg$foreach.count##
                 #if(!$foreach.first), #end##
 arg$foreach.count##
             #end]).encode();
-
-        console.log(data);
 
         const Tx = {
             from: account.address,
@@ -89,6 +89,7 @@ arg$foreach.count##
         let res = await
         web3.eth.call(Tx);
         let avmRes = await web3.avm.contract.decode('$method.returnType', res);
+        console.log("Response : \n");
         console.log(avmRes);
         return avmRes;
     }
@@ -96,3 +97,5 @@ arg$foreach.count##
     #end
 #end
 /**************************************  Contract call transactions Ends **************************************/
+
+//Place your method call here

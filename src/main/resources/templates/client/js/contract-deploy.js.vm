@@ -1,9 +1,11 @@
 const Web3 = require("aion-web3");
+const BN = require("bn.js");
 let path = require('path');
 
-const web3 = new Web3(new Web3.providers.HttpProvider('http://<host>:8545'));
+//Replace correct values for $web3_endpoint, $private_key
+const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
+const privateKey = "$private_key";
 
-const privateKey = "<private_key>";
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
 console.log(account.address);
 
@@ -47,6 +49,8 @@ arg$foreach.count##
         signedTx.rawTransaction
     ).on('receipt', receipt => {
         console.log("Receipt received!\ntxHash =", receipt.transactionHash)
+    }).catch(err => {
+        console.log("Deployment error: " + err);
     });
 
     console.log(receipt);
@@ -55,4 +59,4 @@ arg$foreach.count##
     return receipt;
 }
 
-deploy();
+deploy("0");

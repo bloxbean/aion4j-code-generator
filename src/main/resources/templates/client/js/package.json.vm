@@ -1,0 +1,9 @@
+{
+  "name": "$projectName",
+  "version": "$version",
+  "description": "Enter your description here",
+  "dependencies": {
+    "aion-web3": "^1.2.6-beta.2",
+    "bn.js": "^5.0.0"
+  }
+}
