@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aion4j</groupId>
     <artifactId>aion4j-code-generator</artifactId>
-    <version>0.1.9</version>
+    <version>0.1.10-SNAPSHOT</version>
     <name>aion4j-code-generator</name>
     <description>Code Generation library for AVM Smart Contract</description>
     <url>https://github.com/bloxbean/aion4j-code-generator</url>
@@ -25,7 +25,7 @@
         <url>https://github.com/bloxbean/aion4j-code-generator/</url>
         <connection>scm:git:git@github.com:bloxbean/aion4j-code-generator.git</connection>
         <developerConnection>scm:git:git@github.com:bloxbean/aion4j-code-generator.git</developerConnection>
-        <tag>aion4j-code-generator-0.1.9</tag>
+        <tag>aion4j-code-generator-0.1.5</tag>
     </scm>
 
     <properties>
