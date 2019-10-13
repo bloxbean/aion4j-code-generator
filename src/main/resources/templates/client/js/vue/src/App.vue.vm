@@ -1,0 +1,30 @@
+<template>
+  <div id="app" class="container">
+    #foreach($component in $components)
+    <$component/>
+    #end
+  </div>
+</template>
+
+<script>
+#foreach($component in $components)
+import $component from './components/${component}.vue'
+#end
+
+export default {
+  name: 'app',
+  components: {
+  #foreach($component in $components)
+    #if(!$foreach.first), #end##
+$component##
+  #end
+  }
+}
+</script>
+
+<style>
+  .card {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>

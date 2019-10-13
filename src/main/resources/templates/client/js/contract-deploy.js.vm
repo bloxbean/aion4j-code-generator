@@ -59,4 +59,5 @@ arg$foreach.count##
     return receipt;
 }
 
+//invoke deploy method
 deploy("0");

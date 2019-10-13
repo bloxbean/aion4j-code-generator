@@ -1,5 +1,14 @@
+/*
+* Use this javascript to invoke contract method
+* The methods in this javascript don't use ABI string. It uses low-level apis to encode method call data and send transaction.
+*/
+#if($mode == 'node')
 const Web3 = require("aion-web3");
 const BN = require("bn.js");
+#elseif($mode == 'vue')
+import Web3 from "aion-web3";
+import BN from "bn.js";
+#end
 
 //Replace correct values for $web3_endpoint, $private_key, $contract_address
 const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
@@ -12,9 +21,9 @@ console.log("Account : " + account.address);
 /**************************************  Contract transactions **************************************/
 #foreach($method in $abi.methods)
     async function ${method.methodName}(##
-value##
         #foreach($param in $method.parameters)
-,arg$foreach.count##
+            #if(!$foreach.first), #end##
+param$foreach.count##
         #end) {
         //calling method getCount(), which takes no argument, and returns a string
         let data = web3.avm.contract.method('${method.methodName}').inputs([##
@@ -24,7 +33,7 @@ value##
             #end], [##
             #foreach($param in $method.parameters)
                 #if(!$foreach.first), #end##
-arg$foreach.count##
+param$foreach.count##
             #end]).encode();
 
         const Tx = {
@@ -33,7 +42,7 @@ arg$foreach.count##
             data: data,
             gasPrice: 10000000000,
             gas: 2000000,
-            value:new BN(value),
+            value:new BN(0),
             type: '0x1'
         };
 
@@ -42,14 +51,17 @@ arg$foreach.count##
             Tx, account.privateKey
         ).then((res) => signedCall = res);
 
+        #if($mode == 'node')
         console.log(signed);
         const re = await web3.eth.sendSignedTransaction( signed.rawTransaction
         ).on('receipt', receipt => {
             console.log("Receipt received!\ntxHash =", receipt.transactionHash)
         }).catch(err => {
             console.log("Transaction error: " + err);
-        });;
-
+        });
+        #elseif($mode == 'vue')
+        const re = await web3.eth.sendSignedTransaction( signed.rawTransaction)
+        #end
         //console.log(re); //reciept
         //console.log(re.logs[0].topics); //log topic
         return re;
@@ -58,13 +70,13 @@ arg$foreach.count##
 #end
 /**************************************  Contract transactions ends **************************************/
 
-/**************************************  Contract call transactions **************************************/
+/**************************************  Contract call methods **************************************/
 #foreach($method in $abi.methods)
     #if($method.returnType != 'void')
     async function ${method.methodName}_call(##
         #foreach($param in $method.parameters)
             #if(!$foreach.first), #end##
-arg$foreach.count##
+param$foreach.count##
         #end) {
         //calling method getCount(), which takes no argument, and returns a string
         let data = web3.avm.contract.method('${method.methodName}').inputs([##
@@ -74,7 +86,7 @@ arg$foreach.count##
             #end], [##
             #foreach($param in $method.parameters)
                 #if(!$foreach.first), #end##
-arg$foreach.count##
+param$foreach.count##
             #end]).encode();
 
         const Tx = {
@@ -89,8 +101,10 @@ arg$foreach.count##
         let res = await
         web3.eth.call(Tx);
         let avmRes = await web3.avm.contract.decode('$method.returnType', res);
+        #if($mode == 'node')
         console.log("Response : \n");
         console.log(avmRes);
+        #end
         return avmRes;
     }
 
@@ -98,4 +112,17 @@ arg$foreach.count##
 #end
 /**************************************  Contract call transactions Ends **************************************/
 
+#if($mode == 'node')
 //Place your method call here
+#end
+#if($mode == 'vue')
+export {##
+    #foreach($method in $abi.methods)
+        #if(!$foreach.first), #end
+$method.methodName##
+        #if($method.returnType != 'void')
+, ${method.methodName}_call##
+        #end
+    #end
+}##
+#end

@@ -1,0 +1,105 @@
+<template>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">$method.methodName</h5>
+
+            <form @submit.prevent="sendTransaction">
+    #foreach($param in $method.parameters)
+              <fieldset class="form-group">
+                <label for="parameter_$foreach.count">Parameter $foreach.count ($param)</label>
+                <input type="text" class="form-control" id="parameter_$foreach.count" name="parameter_$foreach.count" v-model="input.param$foreach.count">
+              </fieldset>
+    #end
+              <div class="btn-toolbar">
+                  <button type="submit" class="btn btn-outline-primary btn-sm mr-2" v-if="!processing">$method.methodName</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm mr-2" disabled v-if="processing">Sending Txn ...</button>
+
+    #if($method.returnType != 'void')
+                  <button type="button" class="btn btn-outline-primary btn-sm mr-2"  v-if="!callProcessing" v-on:click="call">${method.methodName}_call</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm mr-2" disabled v-if="callProcessing">Processing ...</button>
+    #end
+              </div>
+            </form>
+            <br/>
+            <fieldset class="form-group">
+              <label>Result</label>
+              <textarea class="form-control" id="result" rows="10" v-model="result"></textarea>
+            </fieldset>
+            <fieldset class="form-group">
+              <label>Error</label>
+              <textarea class="form-control" id="error" rows="3" v-model="error"></textarea>
+            </fieldset>
+        </div>
+    </div>
+</template>
+
+<script>
+#if($method.returnType == 'void')
+import {$method.methodName} from "../contract-abi";
+#else
+import {$method.methodName, ${method.methodName}_call} from "../contract-abi";
+#end
+
+export default {
+  name: '${component}',
+  data() {
+    return {
+      input: {
+        value: "",
+#foreach($param in $method.parameters)
+        param$foreach.count: '',
+#end
+      },
+      result: '{}',
+      error: "",
+      processing: false,
+      callProcessing: false
+    }
+  },
+  methods: {
+    sendTransaction()  {
+      this.processing = true;
+      ${method.methodName}(##
+            #foreach($param in $method.parameters)
+                #if(!$foreach.first), #end##
+                #if($param == 'String' || $param == 'Address')
+this.input.param$foreach.count##
+                #else
+eval(this.input.param$foreach.count)##eval for type other than String
+                #end
+            #end).then(response => {
+        this.result = JSON.stringify(response, null, 2)
+        this.processing = false;
+      }).catch(error => {
+          this.error = error;
+          this.processing = false;
+      })
+    },
+#if($method.returnType != 'void')
+    call()  {
+      this.callProcessing = true;
+      ${method.methodName}_call(##
+           #foreach($param in $method.parameters)
+              #if(!$foreach.first), #end##
+               #if($param == 'String' || $param == 'Address')
+this.input.param$foreach.count##
+               #else
+eval(this.input.param$foreach.count)##eval for type other than String
+               #end
+           #end).then(response => {
+        this.result = response;
+        this.callProcessing = false;
+      }).catch(error => {
+          this.error = error;
+          this.callProcessing = false;
+      })
+    }
+#end
+  }
+
+}
+
+
+</script>
+

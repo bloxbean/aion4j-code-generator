@@ -41,8 +41,8 @@ public class JsClientGeneratorTest {
         Assert.assertTrue(content.contains("let jarPath = path.join(__dirname,'test.jar')"));
 
         String callContent = FileUtil.readFile(tempDir + File.separator + "contract.js");
-        Assert.assertTrue(callContent.contains("async function setValues_call(arg1, arg2, arg3, arg4, arg5)"));
-        Assert.assertTrue(callContent.contains("let data = web3.avm.contract.method('setValues').inputs([\"short[]\", \"int[][]\", \"BigInteger\", \"long[][]\", \"boolean\"], [arg1, arg2, arg3, arg4, arg5])"));
+        Assert.assertTrue(callContent.contains("async function setValues_call(param1, param2, param3, param4, param5)"));
+        Assert.assertTrue(callContent.contains("let data = web3.avm.contract.method('setValues').inputs([\"short[]\", \"int[][]\", \"BigInteger\", \"long[][]\", \"boolean\"], [param1, param2, param3, param4, param5])"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class JsClientGeneratorTest {
         Assert.assertTrue(deployContent.contains("let jarPath = path.join(__dirname,'contract.jar')"));
 
         String callContent = FileUtil.readFile(tempDir + File.separator + "contract.js");
-        Assert.assertTrue(callContent.contains("async function setValues_call(arg1, arg2, arg3, arg4, arg5)"));
+        Assert.assertTrue(callContent.contains("async function setValues_call(param1, param2, param3, param4, param5)"));
     }
 
     @Test
@@ -97,6 +97,6 @@ public class JsClientGeneratorTest {
 
         String content = FileUtil.readFile(tempDir + File.separator + "contract-abi.js");
         System.out.println(content);
-        Assert.assertTrue(content.contains("async function setValues(value,arg1,arg2,arg3,arg4,arg5)"));
+        Assert.assertTrue(content.contains("async function setValues(param1, param2, param3, param4, param5)"));
     }
 }

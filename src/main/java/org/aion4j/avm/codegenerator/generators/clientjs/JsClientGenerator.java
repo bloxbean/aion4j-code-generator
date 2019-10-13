@@ -27,6 +27,8 @@ public class JsClientGenerator extends BaseGenerator {
     @Override
     protected void doGenerate(String baseDir, String packageDir, HashMap<String, Object> data) {
         try {
+            data.put("mode", "node");
+
             //Generate deploy js
             FileWriter contractDeployWriter = new FileWriter(new File(baseDir, "contract-deploy.js"));
             generateFromTemplate(CONTRACT_DEPLOY_JS_TEMPLATE, data, contractDeployWriter);
@@ -47,7 +49,7 @@ public class JsClientGenerator extends BaseGenerator {
                 generateFromTemplate(PACKAGE_JSON_TEMPLATE, data, new FileWriter(packageJson));
             }
         } catch (Exception e) {
-            throw new CodeGenerationException("Error in generting test support code", e);
+            throw new CodeGenerationException("Error in generting js client code", e);
         }
     }
 

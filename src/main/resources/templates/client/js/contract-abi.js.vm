@@ -1,5 +1,13 @@
+/*
+* Use this javascript to invoke contract methods
+* The methods in this javascript uses ABI interface and generates high-level methods to invoke the contract methods.
+*/
+#if($mode == 'node')
 const Web3 = require("aion-web3");
 const BN = require("bn.js");
+#elseif($mode == 'vue')
+import Web3 from "aion-web3";
+#end
 
 //Replace correct values for $web3_endpoint, $private_key, $contract_address
 const web3 = new Web3(new Web3.providers.HttpProvider('$web3_endpoint'));
@@ -12,13 +20,22 @@ let abi = `$abi_str
 
 let abiObj = web3.avm.contract.Interface(abi);
 
-web3.avm.contract.initBinding(contractAddress, abiObj, privateKey,web3);
+try {
+    web3.avm.contract.initBinding(contractAddress, abiObj, privateKey, web3);
+} catch(error) {
+    #if($mode == 'node')
+    console.log('Please check if web3 url, private key and contract address are properly set in contract-abi.js.');
+    #else
+    alert.log('Please check if web3 url, private key and contract address are properly set in contract-abi.js.');
+    #end
+    throw error;
+}
 
 #foreach($method in $abi.methods)
 async function ${method.methodName}(##
-value##
     #foreach($param in $method.parameters)
-,arg$foreach.count##
+        #if(!$foreach.first), #end##
+param$foreach.count##
     #end) {
     #if($foreach.first)
     /*
@@ -31,15 +48,69 @@ value##
     */
 
     #end
+    #if($mode == 'node')
     console.log("Sending transaction ...");
+    #end
     let res = await web3.avm.contract.transaction.${method.methodName}(##
         #foreach($param in $method.parameters)
             #if(!$foreach.first), #end##
-arg$foreach.count##
-        #end);
+param$foreach.count##
+        #end)
+    #if($mode == 'node')
     console.log(res); //receipt
+    #end
+    return res;
 }
 
 #end
 
+/******************************************************* Contract call methods ***************************************************************/
+
+#foreach($method in $abi.methods)
+    #if($method.returnType != 'void')
+async function ${method.methodName}_call(##
+        #foreach($param in $method.parameters)
+            #if(!$foreach.first), #end##
+param$foreach.count##
+        #end) {
+    #if($foreach.first)
+        /*
+        Set gas, price, value, nonce if needed.
+        web3.avm.contract.setGas(value) - accepts an integer and set the value of nonce to be used for transactions. The default is 5000000.
+        web3.avm.contract.setGasPrice(value) - accepts an integer and set the value of nonce to be used for transactions. The default is 2000000.
+        web3.avm.contract.setValue(value) -  accepts an integer and set the value of nonce to be used for transactions. The default is 0.
+        web3.avm.contract.setNonce(value) - accepts an integer and set the value of nonce to be used for transactions. The default is null and a value is calculated for each transaction.
+        web3.avm.contract.setTransactionObject(obj) - accepts an integer and accept an object in the format of a transaction object.
+        */
+
+    #end
+    #if($mode == 'node')
+    console.log("Sending transaction ...");
+    #end
+    let res = await web3.avm.contract.readOnly.${method.methodName}(##
+        #foreach($param in $method.parameters)
+            #if(!$foreach.first), #end##
+param$foreach.count##
+        #end)
+    #if($mode == 'node')
+    console.log(res); //return
+    #end
+    return res;
+}
+    #end
+#end
+
+#if($mode == 'node')
 //Place your method call here
+#end
+#if($mode == 'vue')
+export {##
+    #foreach($method in $abi.methods)
+      #if(!$foreach.first), #end
+$method.methodName##
+        #if($method.returnType != 'void')
+, ${method.methodName}_call##
+        #end
+    #end
+}##
+#end
