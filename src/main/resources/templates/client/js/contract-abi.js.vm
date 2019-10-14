@@ -26,7 +26,7 @@ try {
     #if($mode == 'node')
     console.log('Please check if web3 url, private key and contract address are properly set in contract-abi.js.');
     #else
-    alert.log('Please check if web3 url, private key and contract address are properly set in contract-abi.js.');
+    alert('Please check if web3 url, private key and contract address are properly set in contract-abi.js.');
     #end
     throw error;
 }
