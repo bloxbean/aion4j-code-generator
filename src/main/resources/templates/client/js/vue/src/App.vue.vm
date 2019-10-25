@@ -13,12 +13,12 @@ import $component from './components/${component}.vue'
 
 export default {
   name: 'app',
-  components: {
+  components: { ##
   #foreach($component in $components)
     #if(!$foreach.first), #end##
 $component##
   #end
-  }
+ }
 }
 </script>
 
